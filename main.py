@@ -1,4 +1,4 @@
-
+# Pascual Torres Melannie Abril
 import flet as ft
 import mysql.connector
 import sys
@@ -12,7 +12,6 @@ def main(page: ft.Page):
     page.scroll = ft.ScrollMode.AUTO
     try:
         conexion = mysql.connector.connect(
-
             host="localhost", 
             user="root",       
             password=""    
@@ -26,28 +25,25 @@ def main(page: ft.Page):
         )
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS alumnos (
-                       matricula VARCHAR(20) PRIMARY KEY,
-                       apellido_paterno VARCHAR(50) NOT NULL,
-                       apellido_materno VARCHAR(50) NOT NULL,
-                       nombres VARCHAR(100) NOT NULL,
-                       curp VARCHAR(18) NOT NULL,
-                       especialidad VARCHAR(100) NOT NULL,
-                       telefono CHAR(10) NOT NULL,
-                       ciudad_origen VARCHAR(100) NOT NULL,
-                       estado VARCHAR(50) NOT NULL,
-                       disciplina VARCHAR(100) NOT NULL,
-                       foto VARCHAR (255)
+                        matricula VARCHAR(20) PRIMARY KEY,
+                        apellido_paterno VARCHAR(50) NOT NULL,
+                        apellido_materno VARCHAR(50) NOT NULL,
+                        nombres VARCHAR(100) NOT NULL,
+                        curp VARCHAR(18) NOT NULL,
+                        especialidad VARCHAR(100) NOT NULL,
+                        telefono CHAR(10) NOT NULL,
+                        ciudad_origen VARCHAR(100) NOT NULL,
+                        estado VARCHAR(50) NOT NULL,
+                        disciplina VARCHAR(100) NOT NULL,
+                        foto VARCHAR (255)
             )
-
         """)
         cursor.execute("""
-
             CREATE TABLE IF NOT EXISTS usuarios (
-                       id INT AUTO_INCREMENT PRIMARY KEY,
-                       usuario VARCHAR(50) UNIQUE NOT NULL,
-                       password VARCHAR(255) NOT NULL
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        usuario VARCHAR(50) UNIQUE NOT NULL,
+                        password VARCHAR(255) NOT NULL
             )
-
         """)
         conexion.commit()
         cursor.execute(
@@ -55,7 +51,6 @@ def main(page: ft.Page):
             ("Melannie",)
         )
         if cursor.fetchone() is None:
-
             password_hash = bcrypt.hashpw(
             "Melannie1".encode(),
             bcrypt.gensalt()
@@ -73,7 +68,6 @@ def main(page: ft.Page):
         print("❌ Error de conexión")
         print(e)
         return
-
     matricula = ft.TextField(label="Matricula",width=250, capitalization=ft.TextCapitalization.CHARACTERS, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     apellido_paterno = ft.TextField(label="Apellido Paterno", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     apellido_materno = ft.TextField(label="Apellido Materno", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
@@ -97,34 +91,27 @@ def main(page: ft.Page):
     resultado = ft.Text()
     resultado.data = False
     busqueda = ft.TextField(
-         label="Buscar matrícula o apellido",
+            label="Buscar matrícula o apellido",
         width=350
     )
-
     imagen_alumno = ft.Image(
         src="https://static.vecteezy.com/system/resources/previews/005/544/753/original/profile-icon-design-free-vector.jpg",
         width=120,
         height=120,
     )
-
     usuario_login = ft.TextField(
         label="Usuario",
         width=250
     )
-
     password_login = ft.TextField(
         label="Contraseña",
         width=250,
         password=True,
     can_reveal_password=True
     )
-
     resultado_login = ft.Text()
-
     lista_datos = ft.Container(
-
         content=ft.Column(
-
             scroll=ft.ScrollMode.AUTO
         ),
         height=180,
@@ -181,8 +168,8 @@ def main(page: ft.Page):
         if matricula.value: 
             cursor.execute("""
                SELECT *
-               FROM alumnos
-               WHERE matricula = %s
+                FROM alumnos
+                WHERE matricula = %s
             """,(matricula.value.upper(),))
             alumno = cursor.fetchone()
             if alumno:
@@ -201,25 +188,23 @@ def main(page: ft.Page):
                     imagen_alumno.src = alumno[10]
                 else:
                     imagen_alumno.src = "https://static.vecteezy.com/system/resources/previews/005/544/753/original/profile-icon-design-free-vector.jpg"
-
                 matricula.disabled = True
-
                 resultado.value = "Alumno encontrado"
                 resultado.color = "green"
             else:
-               resultado.value = "Matricula no encontrada"
-               resultado.color = "red"
+                resultado.value = "Matricula no encontrada"
+                resultado.color = "red"
             page.update()
             cargar_lista()
             return
         elif apellido_paterno.value:
             cursor.execute("""
-               SELECT matricula,
-               apellido_paterno,
-               apellido_materno,
-               nombres
-               FROM alumnos
-               WHERE apellido_paterno LIKE %s
+                SELECT matricula,
+                apellido_paterno,
+                apellido_materno,
+                nombres
+                FROM alumnos
+                WHERE apellido_paterno LIKE %s
             """,(f"%{apellido_paterno.value}%",))
         else:
             cursor.execute("""
@@ -252,7 +237,6 @@ def main(page: ft.Page):
             resultado.color = "orange"
             page.update()
             return
-        
         if (
             not matricula.value or
             not apellido_paterno.value or
@@ -282,17 +266,15 @@ def main(page: ft.Page):
             resultado.color = "red"
             page.update()
             return
-        
         if not (
             foto.value.lower().endswith(".jpg")
             or foto.value.lower().endswith(".jpeg")
             or foto.value.lower().endswith(".png")
         ):
-           resultado.value = "La foto debe ser JPG o PNG"
-           resultado.color = "red"
-           page.update()
-           return
-
+            resultado.value = "La foto debe ser JPG o PNG"
+            resultado.color = "red"
+            page.update()
+            return
         sql = """
         INSERT INTO alumnos (
         matricula, 
@@ -333,7 +315,6 @@ def main(page: ft.Page):
             resultado.value = f"Error: {error}"
         page.update()
 
-
     def actualizar(e):
         if (
             not matricula.value or
@@ -369,10 +350,10 @@ def main(page: ft.Page):
             or foto.value.lower().endswith(".jpeg")
             or foto.value.lower().endswith(".png")
         ):
-           resultado.value = "La foto debe ser JPG o PNG"
-           resultado.color = "red"
-           page.update()
-           return
+            resultado.value = "La foto debe ser JPG o PNG"
+            resultado.color = "red"
+            page.update()
+            return
         
         try:
             cursor.execute("""
@@ -414,8 +395,7 @@ def main(page: ft.Page):
             resultado.value = f"Error: {error}"
             resultado.color = "red"
         page.update()
-         
-
+        
 
     def confirmar_eliminacion(e):
         dlg = ft.AlertDialog(
@@ -433,11 +413,10 @@ def main(page: ft.Page):
                 )
             ] 
         )
-
         page.overlay.append(dlg)
         dlg.open = True
         page.update()
- 
+
     def cerrar_dialogo(dlg):
         dlg.open = False
         page.update()
@@ -448,7 +427,6 @@ def main(page: ft.Page):
             resultado.color = "red"
             page.update()
             return
-
         try:
             cursor.execute(
                 "DELETE FROM alumnos WHERE matricula = %s",
@@ -470,20 +448,16 @@ def main(page: ft.Page):
 
     def cargar_lista():
         lista_datos.content.controls.clear()
-
         cursor.execute("""
             SELECT matricula,
-                   apellido_paterno,
-                   apellido_materno,
-                   nombres
+                    apellido_paterno,
+                    apellido_materno,
+                    nombres
             FROM alumnos
             ORDER BY apellido_paterno
         """)
-
         registros = cursor.fetchall()
-
         for matr, ap_pat, ap_mat, nom in registros:
-
             lista_datos.content.controls.append(
                 ft.ListTile(
                     title=ft.Text(f"{nom}"),
@@ -501,9 +475,7 @@ def main(page: ft.Page):
             FROM alumnos
             WHERE matricula = %s
         """, (matricula_buscar,))
-
         alumno = cursor.fetchone()
-
         if alumno:
             matricula.value = alumno[0]
             apellido_paterno.value = alumno[1]
@@ -517,24 +489,21 @@ def main(page: ft.Page):
             disciplina.value = alumno[9]
             foto.value = alumno[10]
             matricula.disabled = True
-
             if alumno[10]:
                 imagen_alumno.src = alumno[10]
-
             page.update()
 
     def buscar(e): 
         lista_datos.content.controls.clear()
-
         cursor.execute("""
             SELECT matricula,
-                   apellido_paterno,
+                    apellido_paterno,
                     apellido_materno,
                     nombres
             FROM alumnos
             WHERE matricula LIKE %s
-               OR apellido_paterno LIKE %s
-               OR apellido_materno LIKE %s
+                OR apellido_paterno LIKE %s
+                OR apellido_materno LIKE %s
             ORDER BY apellido_paterno
         """,
         (
@@ -553,79 +522,64 @@ def main(page: ft.Page):
                     on_click=lambda e, m=matr: cargar_alumno(m)
                 )
             )
-
         page.update()
 
     file_picker = ft.FilePicker()
-
     page.services.append(file_picker)
     async def seleccionar_foto(e):
         archivos = await file_picker.pick_files(
-           allow_multiple=False,
-           allowed_extensions=["jpg", "jpeg", "png"]
+            allow_multiple=False,
+            allowed_extensions=["jpg", "jpeg", "png"]
         )
-
         if archivos:
             foto.value = archivos[0].path
             imagen_alumno.src = archivos[0].path
             page.update()
-
 
     def salir(e):
         cursor.close()
         conexion.close()
         sys.exit()
 
-
 # INTERFAZ
-
     btn_foto = ft.ElevatedButton(
-       "Seleccionar foto",
-       on_click=seleccionar_foto
+        "Seleccionar foto",
+        on_click=seleccionar_foto
     )
-    
     btn_buscar = ft.ElevatedButton(
         
         "Buscar",
         on_click=buscar
     )
-    
     btn_guardar = ft.ElevatedButton(
-
         "Guardar",
         on_click=guardar,
         width=100
     )
     btn_consultar = ft.ElevatedButton(
-
         "Consultar",
         on_click=consultar,
         width=110
     )
     btn_actualizar = ft.ElevatedButton(
-
         "Actualizar",
         on_click=actualizar,
         width=115
     )
     btn_eliminar = ft.ElevatedButton(
-
         "Eliminar",
         on_click=confirmar_eliminacion,
         width=105
     )
     btn_limpiar = ft.ElevatedButton(
-
         "Limpiar",
         on_click=limpiar,
         width=100
     )
     btn_salir = ft.ElevatedButton(
-
         "Salir",
         on_click=salir,
         width=100,
-
         bgcolor="red",
         color="white"
     )
@@ -671,7 +625,7 @@ def main(page: ft.Page):
                 ]
             ),
         ],
-         alignment=ft.MainAxisAlignment.CENTER
+        alignment=ft.MainAxisAlignment.CENTER
     )
 
     contenedor_login = ft.Container(
@@ -704,21 +658,15 @@ def main(page: ft.Page):
                     weight="bold",
                     color="black"
                 ),
-
                 imagen_alumno,
                 foto,
                 btn_foto,
-
                 campos,
-
                 fila1,
                 fila2,
-
                 resultado,
-
                 busqueda,
                 btn_buscar,
-
                 lista_datos
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -730,15 +678,12 @@ def main(page: ft.Page):
         border_radius=15,
         visible=False
     )
-
     page.add(
         contenedor_login,
         contenedor_sistema,
         
     )
     cargar_lista()
-
-    # consultar(None)
 
 ft.run(main)
 
