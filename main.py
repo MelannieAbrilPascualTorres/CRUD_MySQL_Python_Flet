@@ -93,7 +93,7 @@ def main(page: ft.Page):
         ft.dropdown.Option("Basquetbol"),
         ft.dropdown.Option("Voleibol")
     ] )
-    foto = ft.TextField(label="Foto", width=250, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
+    foto = ft.TextField(visible=False, label="Foto", width=250, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     resultado = ft.Text()
     resultado.data = False
     busqueda = ft.TextField(
@@ -556,6 +556,21 @@ def main(page: ft.Page):
 
         page.update()
 
+    file_picker = ft.FilePicker()
+
+    page.services.append(file_picker)
+    async def seleccionar_foto(e):
+        archivos = await file_picker.pick_files(
+           allow_multiple=False,
+           allowed_extensions=["jpg", "jpeg", "png"]
+        )
+
+        if archivos:
+            foto.value = archivos[0].path
+            imagen_alumno.src = archivos[0].path
+            page.update()
+
+
     def salir(e):
         cursor.close()
         conexion.close()
@@ -563,6 +578,11 @@ def main(page: ft.Page):
 
 
 # INTERFAZ
+
+    btn_foto = ft.ElevatedButton(
+       "Seleccionar foto",
+       on_click=seleccionar_foto
+    )
     
     btn_buscar = ft.ElevatedButton(
         
@@ -630,6 +650,30 @@ def main(page: ft.Page):
         alignment=ft.MainAxisAlignment.CENTER
     )
 
+    campos = ft.Row(
+        [
+            ft.Column(
+                [
+                    matricula,
+                    apellido_paterno,
+                    apellido_materno,
+                    nombres,
+                    curp
+                ]
+            ),
+            ft.Column(
+                [
+                    telefono,
+                    ciudad_origen,
+                    estado,
+                    disciplina,
+                    especialidad
+                ]
+            ),
+        ],
+         alignment=ft.MainAxisAlignment.CENTER
+    )
+
     contenedor_login = ft.Container(
         content=ft.Column(
             [
@@ -661,18 +705,11 @@ def main(page: ft.Page):
                     color="black"
                 ),
 
-                matricula,
-                apellido_paterno,
-                apellido_materno,
-                nombres,
-                curp,
-                especialidad,
-                telefono,
-                ciudad_origen,
-                estado,
-                disciplina,
-                foto,
                 imagen_alumno,
+                foto,
+                btn_foto,
+
+                campos,
 
                 fila1,
                 fila2,
@@ -687,7 +724,7 @@ def main(page: ft.Page):
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=10
         ),
-        width=500,
+        width=700,
         padding=20,
         bgcolor=ft.Colors.GREY_100,
         border_radius=15,
@@ -704,3 +741,4 @@ def main(page: ft.Page):
     # consultar(None)
 
 ft.run(main)
+
