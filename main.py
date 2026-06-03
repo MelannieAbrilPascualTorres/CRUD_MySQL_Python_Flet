@@ -6,7 +6,7 @@ import bcrypt
 
 def main(page: ft.Page):
     page.title = "Sistema de alumnos"
-    page.bgcolor = ft.Colors.LIME_100
+    page.bgcolor = ft.Colors.INDIGO_100
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.scroll = ft.ScrollMode.AUTO
@@ -128,7 +128,7 @@ def main(page: ft.Page):
             scroll=ft.ScrollMode.AUTO
         ),
         height=180,
-        width=350,
+        width=550,
         bgcolor=ft.Colors.WHITE,
         padding=5
     )
@@ -691,7 +691,7 @@ def main(page: ft.Page):
         ),
         width=400,
         padding=20,
-        bgcolor=ft.Colors.WHITE,
+        bgcolor=ft.Colors.PURPLE_50,
         border_radius=15
     )
 
@@ -726,7 +726,7 @@ def main(page: ft.Page):
         ),
         width=700,
         padding=20,
-        bgcolor=ft.Colors.GREY_100,
+        bgcolor=ft.Colors.PURPLE_50,
         border_radius=15,
         visible=False
     )
