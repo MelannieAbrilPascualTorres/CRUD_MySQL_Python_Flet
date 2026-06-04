@@ -647,9 +647,9 @@ def main(page: ft.Page):
                                 foto,
                                 btn_foto,
                                 campos,
+                                resultado,
                                 fila1,
-                                fila2,
-                                resultado
+                                fila2
                             ],
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                         ),
@@ -672,7 +672,7 @@ def main(page: ft.Page):
             spacing=10
         ),
         width=1100,
-        height=670,
+        height=690,
         padding=20,
         bgcolor=ft.Colors.PURPLE_50,
         border_radius=15,
