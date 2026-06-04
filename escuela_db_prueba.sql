@@ -1,7 +1,5 @@
-# Pascual Torres Melannie Abril
-
-CREATE DATABASE IF NOT EXISTS escuela_db_prueba;
-USE escuela_db_prueba;
+CREATE DATABASE IF NOT EXISTS escuela_db;
+USE escuela_db;
 
 CREATE TABLE alumnos (
     matricula VARCHAR(20) PRIMARY KEY,
@@ -48,7 +46,7 @@ VALUES
     'Chihuahua',
     'Chihuahua',
     'Voleibol',
-    'sofia.jpg'
+    'c:\Users\hmoon\Downloads\prueba.png'
 ),
 (
     'A002',
@@ -61,5 +59,10 @@ VALUES
     'Delicias',
     'Chihuahua',
     'Fútbol',
-    'carlos.jpg'
+    'c:\Users\hmoon\Downloads\prueba.png'
+);
+INSERT INTO usuarios (usuario, password)
+VALUES (
+    'Melannie',
+    '$2b$12$.NRoZCN1kOSFWPPxk3vng.FUboI.uKxjc8yAKDbWSlY8Z3jWqtxfW'
 );
