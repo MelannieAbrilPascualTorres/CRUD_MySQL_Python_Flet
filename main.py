@@ -245,7 +245,12 @@ def main(page: ft.Page):
             resultado.value = "Alumno guardado correctamente"
             resultado.color ="green"
         except Exception as error:
-            resultado.value = f"Error: {error}"
+            if error.errno == 1062:
+                resultado.value = "La matrícula ya existe"
+                resultado.color = "red"
+            else:
+                resultado.value = f"Error: {error}"
+                resultado.color = "red"
         page.update()
 
     def actualizar(e):
