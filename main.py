@@ -72,9 +72,9 @@ def main(page: ft.Page):
     apellido_paterno = ft.TextField(label="Apellido Paterno", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     apellido_materno = ft.TextField(label="Apellido Materno", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     nombres = ft.TextField(label="Nombres", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
-    curp = ft.TextField(label="Curp", width=250, capitalization=ft.TextCapitalization.CHARACTERS, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
+    curp = ft.TextField(label="Curp", width=250, capitalization=ft.TextCapitalization.CHARACTERS, max_length=18, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     especialidad = ft.TextField(label="Especialidad", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
-    telefono = ft.TextField(label="Telefono", width=250,  input_filter=ft.NumbersOnlyInputFilter(), label_style=ft.TextStyle(color=ft.Colors.GREY_400))
+    telefono = ft.TextField(label="Telefono", width=250,  input_filter=ft.NumbersOnlyInputFilter(), max_length=10, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     ciudad_origen = ft.TextField(label="Ciudad de origen", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     estado = ft.Dropdown(label="Estado", width=250, options=[
         ft.dropdown.Option("Chihuahua"),
@@ -89,7 +89,6 @@ def main(page: ft.Page):
     ] )
     foto = ft.TextField(visible=False, label="Foto", width=250, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     resultado = ft.Text()
-    resultado.data = False
     busqueda = ft.TextField(
             label="Buscar matrícula o apellido",
         width=350
@@ -102,11 +101,11 @@ def main(page: ft.Page):
     )
     usuario_login = ft.TextField(
         label="Usuario",
-        width=250
+        width=300
     )
     password_login = ft.TextField(
         label="Contraseña",
-        width=250,
+        width=300,
         password=True,
     can_reveal_password=True
     )
@@ -115,9 +114,9 @@ def main(page: ft.Page):
         content=ft.Column(
             scroll=ft.ScrollMode.AUTO
         ),
-        height=180,
-        width=550,
-        bgcolor=ft.Colors.WHITE,
+        height=250,
+        width=450,
+        bgcolor=ft.Colors.WHITE_60,
         padding=5,
     )
     
@@ -131,11 +130,12 @@ def main(page: ft.Page):
         especialidad.value = ""
         telefono.value = ""
         ciudad_origen.value = ""
-        estado.value = None
-        disciplina.value = None
+        estado.value = ""
+        disciplina.value = ""
         foto.value = ""
         imagen_alumno.src = None
         imagen_alumno.visible = False
+        resultado.value = ""
         page.update()
 
     def login(e):
@@ -160,78 +160,8 @@ def main(page: ft.Page):
                 resultado_login.value = "Contraseña incorrecta"
                 resultado_login.color = "red"
         else:
-            resultado_login.value = "Usuario no encontrado"
+            resultado_login.value = "Contraseña o usuario incorrecto"
             resultado_login.color = "red"
-        page.update()
-
-    def consultar(e):
-        lista_datos.content.controls.clear()
-        if matricula.value: 
-            cursor.execute("""
-               SELECT *
-                FROM alumnos
-                WHERE matricula = %s
-            """,(matricula.value.upper(),))
-            alumno = cursor.fetchone()
-            if alumno:
-                matricula.value = alumno[0]
-                apellido_paterno.value = alumno[1]
-                apellido_materno.value = alumno[2]
-                nombres.value = alumno[3]
-                curp.value = alumno[4]
-                especialidad.value = alumno[5]
-                telefono.value = alumno[6]
-                ciudad_origen.value = alumno[7]
-                estado.value = alumno[8]
-                disciplina.value = alumno[9]
-                foto.value = alumno[10]
-                if alumno[10]:
-                    imagen_alumno.src = alumno[10]
-                    imagen_alumno.visible = True
-                else:
-                    imagen_alumno.visible = False
-                    imagen_alumno.src = None
-                matricula.disabled = True
-                resultado.value = "Alumno encontrado"
-                resultado.color = "green"
-            else:
-                resultado.value = "Matricula no encontrada"
-                resultado.color = "red"
-            page.update()
-            cargar_lista()
-            return
-        elif apellido_paterno.value:
-            cursor.execute("""
-                SELECT matricula,
-                apellido_paterno,
-                apellido_materno,
-                nombres
-                FROM alumnos
-                WHERE apellido_paterno LIKE %s
-            """,(f"%{apellido_paterno.value}%",))
-        else:
-            cursor.execute("""
-                SELECT matricula,
-                apellido_paterno,
-                apellido_materno,
-                nombres
-                FROM alumnos
-            """)
-        registros = cursor.fetchall()
-        if not registros:
-            resultado.value = "No se encontraron registros"
-            resultado.color = "orange"
-        else:
-            for matr, ap_pate, ap_mate, nom in registros:
-                lista_datos.content.controls.append(
-                    ft.ListTile(
-                        title=ft.Text(f"{matr} - {nom}"),
-                        subtitle=ft.Text(f"{ap_pate} {ap_mate}"),
-                        on_click=lambda e, m=matr: cargar_alumno(m)
-                    )
-                )
-            resultado.value = f"Se encontraron {len(registros)} alumnos"
-            resultado.color = "blue"
         page.update()
 
     def guardar(e):
@@ -398,9 +328,17 @@ def main(page: ft.Page):
             resultado.value = f"Error: {error}"
             resultado.color = "red"
         page.update()
-        
+    
+    def eliminar_confirmado(e, dlg):
+        eliminar(e)
+        cerrar_dialogo(dlg)
 
     def confirmar_eliminacion(e):
+        if not matricula.value:
+            resultado.value = "Seleccione un alumno primero"
+            resultado.color = "red"
+            page.update()
+            return
         dlg = ft.AlertDialog(
             modal=True,
             title=ft.Text("Confirmar eliminación"),
@@ -408,7 +346,7 @@ def main(page: ft.Page):
             actions=[
                 ft.TextButton(
                     "Sí",
-                    on_click=lambda e: eliminar(e)
+                    on_click=lambda e: eliminar_confirmado(e, dlg)
                 ),
                 ft.TextButton(
                     "No",
@@ -518,16 +456,22 @@ def main(page: ft.Page):
             f"%{busqueda.value}%"
         ))
         registros = cursor.fetchall()
-        for matr, ap_pat, ap_mat, nom in registros:
-            lista_datos.content.controls.append(
-                ft.ListTile(
-                    title=ft.Text(nom),
-                    subtitle=ft.Text(
-                        f"{matr} - {ap_pat} {ap_mat}"
-                    ),
-                    on_click=lambda e, m=matr: cargar_alumno(m)
+        if not registros:
+            resultado.value = "No se encontraron alumnos"
+            resultado.color = "orange"
+        else:
+            resultado.value = f"Se encontraron {len(registros)} alumnos"
+            resultado.color = "green"
+            for matr, ap_pat, ap_mat, nom in registros:
+                lista_datos.content.controls.append(
+                    ft.ListTile(
+                        title=ft.Text(nom),
+                        subtitle=ft.Text(
+                            f"{matr} - {ap_pat} {ap_mat}"
+                        ),
+                        on_click=lambda e, m=matr: cargar_alumno(m)
+                    )
                 )
-            )
         page.update()
 
     file_picker = ft.FilePicker()
@@ -563,11 +507,6 @@ def main(page: ft.Page):
         on_click=guardar,
         width=100
     )
-    btn_consultar = ft.ElevatedButton(
-        "Consultar",
-        on_click=consultar,
-        width=110
-    )
     btn_actualizar = ft.ElevatedButton(
         "Actualizar",
         on_click=actualizar,
@@ -597,7 +536,6 @@ def main(page: ft.Page):
     fila1 = ft.Row(
         [
             btn_guardar,
-            btn_consultar,
             btn_actualizar
         ],
         alignment=ft.MainAxisAlignment.CENTER 
@@ -624,11 +562,11 @@ def main(page: ft.Page):
             ),
             ft.Column(
                 [
-                    telefono,
+                    especialidad,
                     ciudad_origen,
                     estado,
                     disciplina,
-                    especialidad
+                    telefono
                 ]
             ),
         ],
@@ -651,6 +589,7 @@ def main(page: ft.Page):
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
         ),
         width=400,
+        height=250,
         padding=20,
         bgcolor=ft.Colors.PURPLE_50,
         border_radius=15
@@ -665,21 +604,40 @@ def main(page: ft.Page):
                     weight="bold",
                     color="black"
                 ),
-                imagen_alumno,
-                foto,
-                btn_foto,
-                campos,
-                fila1,
-                fila2,
-                resultado,
-                busqueda,
-                btn_buscar,
-                lista_datos
+                ft.Row(
+                    [
+                        ft.Column(
+                            [
+                                imagen_alumno,
+                                foto,
+                                btn_foto,
+                                campos,
+                                fila1,
+                                fila2,
+                                resultado
+                            ],
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        ),
+                        ft.Container(width=50),
+                        ft.Column(
+                            [   
+                                ft.Container(height=40),
+                                busqueda,
+                                btn_buscar,
+                                lista_datos
+                            ],
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                        ),
+                    ],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        vertical_alignment=ft.CrossAxisAlignment.START
+                )
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=10
         ),
-        width=700,
+        width=1100,
+        height=670,
         padding=20,
         bgcolor=ft.Colors.PURPLE_50,
         border_radius=15,
@@ -687,10 +645,7 @@ def main(page: ft.Page):
     )
     page.add(
         contenedor_login,
-        contenedor_sistema,
-        
+        contenedor_sistema,    
     )
     cargar_lista()
-
 ft.run(main)
-
