@@ -528,7 +528,6 @@ def main(page: ft.Page):
         conexion.close()
         sys.exit()
 
-# INTERFAZ
     btn_foto = ft.ElevatedButton(
         "Seleccionar foto",
         on_click=seleccionar_foto
