@@ -77,15 +77,46 @@ def main(page: ft.Page):
     telefono = ft.TextField(label="Telefono", width=250,  input_filter=ft.NumbersOnlyInputFilter(), max_length=10, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     ciudad_origen = ft.TextField(label="Ciudad de origen", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     estado = ft.Dropdown(label="Estado", width=250, options=[
+        ft.dropdown.Option("Aguascalientes"),
+        ft.dropdown.Option("Baja California"),
+        ft.dropdown.Option("Baja California Sur"),
+        ft.dropdown.Option("Campeche"),
+        ft.dropdown.Option("Chiapas"),
         ft.dropdown.Option("Chihuahua"),
-        ft.dropdown.Option("Sonora"),
+        ft.dropdown.Option("Ciudad de México"),
         ft.dropdown.Option("Coahuila"),
-        ft.dropdown.Option("Durango")]
+        ft.dropdown.Option("Colima"),
+        ft.dropdown.Option("Durango"),
+        ft.dropdown.Option("Guanajuato"),
+        ft.dropdown.Option("Guerrero"),
+        ft.dropdown.Option("Hidalgo"),
+        ft.dropdown.Option("Jalisco"),
+        ft.dropdown.Option("Estado de México"),
+        ft.dropdown.Option("Michoacán"),
+        ft.dropdown.Option("Morelos"),
+        ft.dropdown.Option("Nayarit"),
+        ft.dropdown.Option("Nuevo León"),
+        ft.dropdown.Option("Oaxaca"),
+        ft.dropdown.Option("Puebla"),
+        ft.dropdown.Option("Querétaro"),
+        ft.dropdown.Option("Quintana Roo"),
+        ft.dropdown.Option("San Luis Potosí"),
+        ft.dropdown.Option("Sinaloa"),
+        ft.dropdown.Option("Sonora"),
+        ft.dropdown.Option("Tabasco"),
+        ft.dropdown.Option("Tamaulipas"),
+        ft.dropdown.Option("Tlaxcala"),
+        ft.dropdown.Option("Veracruz"),
+        ft.dropdown.Option("Yucatán "),
+        ft.dropdown.Option("Zacatecas")]
         )
-    disciplina = ft.Dropdown(label="Disciplina", width=250, options=[
+    disciplina = ft.Dropdown(label="Disciplinas", width=250, options=[
         ft.dropdown.Option("Fútbol"),
         ft.dropdown.Option("Basquetbol"),
-        ft.dropdown.Option("Voleibol")
+        ft.dropdown.Option("Voleibol"),
+        ft.dropdown.Option("Tenis"),
+        ft.dropdown.Option("Ajedrez"),
+        ft.dropdown.Option("Ninguna")
     ] )
     foto = ft.TextField(visible=False, label="Foto", width=250, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     resultado = ft.Text()
