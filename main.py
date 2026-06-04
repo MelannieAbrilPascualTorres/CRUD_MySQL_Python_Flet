@@ -72,9 +72,9 @@ def main(page: ft.Page):
     apellido_paterno = ft.TextField(label="Apellido Paterno", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     apellido_materno = ft.TextField(label="Apellido Materno", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     nombres = ft.TextField(label="Nombres", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
-    curp = ft.TextField(label="Curp", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
+    curp = ft.TextField(label="Curp", width=250, capitalization=ft.TextCapitalization.CHARACTERS, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     especialidad = ft.TextField(label="Especialidad", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
-    telefono = ft.TextField(label="Telefono", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
+    telefono = ft.TextField(label="Telefono", width=250,  input_filter=ft.NumbersOnlyInputFilter(), label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     ciudad_origen = ft.TextField(label="Ciudad de origen", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     estado = ft.Dropdown(label="Estado", width=250, options=[
         ft.dropdown.Option("Chihuahua"),
@@ -95,9 +95,10 @@ def main(page: ft.Page):
         width=350
     )
     imagen_alumno = ft.Image(
-        src="https://static.vecteezy.com/system/resources/previews/005/544/753/original/profile-icon-design-free-vector.jpg",
+        src="",
         width=120,
         height=120,
+        visible=False
     )
     usuario_login = ft.TextField(
         label="Usuario",
@@ -117,10 +118,9 @@ def main(page: ft.Page):
         height=180,
         width=550,
         bgcolor=ft.Colors.WHITE,
-        padding=5
+        padding=5,
     )
     
-
     def limpiar(e):
         matricula.value = ""
         matricula.disabled = False
@@ -134,7 +134,8 @@ def main(page: ft.Page):
         estado.value = None
         disciplina.value = None
         foto.value = ""
-        imagen_alumno.src = "https://static.vecteezy.com/system/resources/previews/005/544/753/original/profile-icon-design-free-vector.jpg"
+        imagen_alumno.src = None
+        imagen_alumno.visible = False
         page.update()
 
     def login(e):
@@ -186,8 +187,10 @@ def main(page: ft.Page):
                 foto.value = alumno[10]
                 if alumno[10]:
                     imagen_alumno.src = alumno[10]
+                    imagen_alumno.visible = True
                 else:
-                    imagen_alumno.src = "https://static.vecteezy.com/system/resources/previews/005/544/753/original/profile-icon-design-free-vector.jpg"
+                    imagen_alumno.visible = False
+                    imagen_alumno.src = None
                 matricula.disabled = True
                 resultado.value = "Alumno encontrado"
                 resultado.color = "green"
@@ -491,6 +494,9 @@ def main(page: ft.Page):
             matricula.disabled = True
             if alumno[10]:
                 imagen_alumno.src = alumno[10]
+                imagen_alumno.visible = True
+            else:
+                imagen_alumno.visible = False
             page.update()
 
     def buscar(e): 
@@ -534,6 +540,7 @@ def main(page: ft.Page):
         if archivos:
             foto.value = archivos[0].path
             imagen_alumno.src = archivos[0].path
+            imagen_alumno.visible = True
             page.update()
 
     def salir(e):
