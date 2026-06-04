@@ -571,14 +571,14 @@ def main(page: ft.Page):
     fila1 = ft.Row(
         [
             btn_guardar,
-            btn_actualizar
+            btn_actualizar,
+            btn_eliminar,
+            btn_limpiar
         ],
         alignment=ft.MainAxisAlignment.CENTER 
     )
     fila2 = ft.Row(
         [
-            btn_eliminar,
-            btn_limpiar,
             btn_salir
         ],
         alignment=ft.MainAxisAlignment.CENTER
