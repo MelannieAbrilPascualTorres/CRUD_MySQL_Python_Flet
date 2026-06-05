@@ -3,6 +3,7 @@ import flet as ft
 import mysql.connector
 import sys
 import bcrypt
+import re
 
 def main(page: ft.Page):
     page.title = "Sistema de alumnos"
@@ -29,7 +30,7 @@ def main(page: ft.Page):
                         apellido_paterno VARCHAR(50) NOT NULL,
                         apellido_materno VARCHAR(50) NOT NULL,
                         nombres VARCHAR(100) NOT NULL,
-                        curp VARCHAR(18) NOT NULL,
+                        curp VARCHAR(18) NOT NULL UNIQUE,
                         especialidad VARCHAR(100) NOT NULL,
                         telefono CHAR(10) NOT NULL,
                         ciudad_origen VARCHAR(100) NOT NULL,
@@ -46,23 +47,6 @@ def main(page: ft.Page):
             )
         """)
         conexion.commit()
-        cursor.execute(
-            "SELECT * FROM usuarios WHERE usuario = %s",
-            ("Melannie",)
-        )
-        if cursor.fetchone() is None:
-            password_hash = bcrypt.hashpw(
-            "Melannie1".encode(),
-            bcrypt.gensalt()
-            ).decode()
-            cursor.execute(
-                """
-                INSERT INTO usuarios (usuario, password)
-                VALUES (%s, %s)
-                """,
-                ("Melannie", password_hash)
-            )
-            conexion.commit()
         print("✅ Conexión exitosa a MySQL")
     except Exception as e:
         print("❌ Error de conexión")
@@ -120,36 +104,17 @@ def main(page: ft.Page):
     ] )
     foto = ft.TextField(visible=False, label="Foto", width=250, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     resultado = ft.Text()
-    busqueda = ft.TextField(
-            label="Buscar matrícula o apellido",
-        width=350
-    )
-    imagen_alumno = ft.Image(
-        src="",
-        width=120,
-        height=120,
-        visible=False
-    )
-    usuario_login = ft.TextField(
-        label="Usuario",
-        width=300
-    )
-    password_login = ft.TextField(
-        label="Contraseña",
-        width=300,
-        password=True,
-    can_reveal_password=True
-    )
+    busqueda = ft.TextField(label="Buscar matrícula o apellido",width=350)
+    imagen_alumno = ft.Image(src="", width=120, height=120, visible=False)
+    usuario_registro = ft.TextField(label="Nuevo usuario", width=300)
+    password_registro = ft.TextField(label="Contraseña", width=300, password=True, can_reveal_password=True)
+    confirmar_password = ft.TextField(label="Confirmar contraseña", width=300, password=True, can_reveal_password=True)
+    resultado_registro = ft.Text()
+    usuario_login = ft.TextField(label="Usuario", width=300)
+    password_login = ft.TextField(label="Contraseña", width=300, password=True, can_reveal_password=True)
     resultado_login = ft.Text()
     lista_datos = ft.Container(
-        content=ft.Column(
-            scroll=ft.ScrollMode.AUTO
-        ),
-        height=250,
-        width=450,
-        bgcolor=ft.Colors.WHITE_60,
-        padding=5,
-    )
+        content=ft.Column(scroll=ft.ScrollMode.AUTO),height=250, width=450, bgcolor=ft.Colors.WHITE_60, padding=5,)
     
     def limpiar(e):
         matricula.value = ""
@@ -167,6 +132,81 @@ def main(page: ft.Page):
         imagen_alumno.src = None
         imagen_alumno.visible = False
         resultado.value = ""
+        page.update()
+
+    def registrar(e):
+        if (
+            not usuario_registro.value
+            or not password_registro.value
+            or not confirmar_password.value
+        ):
+            resultado_registro.value = "Complete todos los campos"
+            resultado_registro.color = "red"
+            page.update()
+            return
+        if len(password_registro.value) < 8:
+            resultado_registro.value = "La contraseña debe tener mínimo 8 caracteres"
+            resultado_registro.color = "red"
+            page.update()
+            return
+        if not re.search(r"[A-Z]", password_registro.value):
+           resultado_registro.value = "Debe contener una mayúscula"
+           resultado_registro.color = "red"
+           page.update()
+           return
+        if not re.search(r"[a-z]", password_registro.value):
+            resultado_registro.value = "Debe contener una minúscula"
+            resultado_registro.color = "red"
+            page.update()
+            return
+        if not re.search(r"\d", password_registro.value):
+            resultado_registro.value = "Debe contener un número"
+            resultado_registro.color = "red"
+            page.update()
+            return
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password_registro.value):
+            resultado_registro.value = "Debe contener un carácter especial"
+            resultado_registro.color = "red"
+            page.update()
+            return
+
+        if password_registro.value != confirmar_password.value:
+            resultado_registro.value = "Las contraseñas no coinciden"
+            resultado_registro.color = "red"
+            page.update()
+            return
+        cursor.execute(
+            "SELECT * FROM usuarios WHERE usuario=%s",
+            (usuario_registro.value,)
+        )
+        if cursor.fetchone():
+            resultado_registro.value = "El usuario ya existe"
+            resultado_registro.color = "red"
+            page.update()
+            return
+        password_hash = bcrypt.hashpw(
+            password_registro.value.encode(),
+            bcrypt.gensalt()
+        ).decode()
+        cursor.execute(
+            """
+            INSERT INTO usuarios(usuario,password)
+            VALUES(%s,%s)
+            """,
+            (
+                usuario_registro.value,
+                password_hash
+            )
+        )
+        conexion.commit()
+        resultado_registro.value = ""
+        resultado_login.color = "green"
+        contenedor_registro.visible = False
+        contenedor_login.visible = False
+        contenedor_sistema.visible = True
+        usuario_registro.value = ""
+        password_registro.value = ""
+        confirmar_password.value = ""
         page.update()
 
     def login(e):
@@ -193,6 +233,16 @@ def main(page: ft.Page):
         else:
             resultado_login.value = "Contraseña o usuario incorrecto"
             resultado_login.color = "red"
+        page.update()
+
+    def ir_registro(e):
+        contenedor_login.visible = False
+        contenedor_registro.visible = True
+        page.update()
+
+    def volver_login(e):
+        contenedor_registro.visible = False
+        contenedor_login.visible = True
         page.update()
 
     def guardar(e):
@@ -239,6 +289,17 @@ def main(page: ft.Page):
             resultado.color = "red"
             page.update()
             return
+        cursor.execute(
+            "SELECT * FROM alumnos WHERE curp = %s",
+            (curp.value,)
+        )
+
+        if cursor.fetchone():
+            resultado.value = "La CURP ya está registrada"
+            resultado.color = "red"
+            page.update()
+            return
+        
         sql = """
         INSERT INTO alumnos (
         matricula, 
@@ -320,6 +381,23 @@ def main(page: ft.Page):
             or foto.value.lower().endswith(".png")
         ):
             resultado.value = "La foto debe ser JPG o PNG"
+            resultado.color = "red"
+            page.update()
+            return
+        cursor.execute(
+            """
+            SELECT * FROM alumnos
+            WHERE curp = %s
+            AND matricula != %s
+            """,
+            (
+                curp.value.upper(),
+                matricula.value.upper()
+            )
+        )
+
+        if cursor.fetchone():
+            resultado.value = "La CURP ya está registrada"
             resultado.color = "red"
             page.update()
             return
@@ -568,6 +646,10 @@ def main(page: ft.Page):
         "Iniciar sesión",
         on_click=login
     )
+    btn_ir_registro = ft.ElevatedButton(
+        "Registrarse",
+         on_click=ir_registro
+    )
     fila1 = ft.Row(
         [
             btn_guardar,
@@ -619,15 +701,51 @@ def main(page: ft.Page):
                 usuario_login,
                 password_login,
                 btn_login,
+                btn_ir_registro,
                 resultado_login
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
         ),
         width=400,
-        height=250,
+        height=270,
         padding=20,
         bgcolor=ft.Colors.PURPLE_50,
         border_radius=15
+    )
+
+    contenedor_registro = ft.Container(
+        content=ft.Column(
+            [
+                ft.Text(
+                    "Registro",
+                    size=22,
+                weight="bold"
+                ),
+
+                usuario_registro,
+                password_registro,
+                confirmar_password,
+
+                ft.ElevatedButton(
+                    "Registrar",
+                    on_click=registrar
+                ),
+
+                ft.ElevatedButton(
+                    "Volver",
+                    on_click=volver_login
+                ),
+
+                resultado_registro
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+        ),
+        width=400,
+        height=350,
+        padding=20,
+        bgcolor=ft.Colors.PURPLE_50,
+        border_radius=15,
+        visible=False
     )
 
     contenedor_sistema = ft.Container(
@@ -680,7 +798,8 @@ def main(page: ft.Page):
     )
     page.add(
         contenedor_login,
-        contenedor_sistema,    
+        contenedor_registro,
+        contenedor_sistema  
     )
     cargar_lista()
 ft.run(main)
