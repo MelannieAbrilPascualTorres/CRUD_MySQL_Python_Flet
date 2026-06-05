@@ -13,7 +13,7 @@ def main(page: ft.Page):
     try:
         conexion = mysql.connector.connect(
             host="localhost", 
-            user="root",       
+            user="root",
             password=""    
         )
         cursor = conexion.cursor()
@@ -68,12 +68,17 @@ def main(page: ft.Page):
         print("❌ Error de conexión")
         print(e)
         return
-    matricula = ft.TextField(label="Matricula",width=250, capitalization=ft.TextCapitalization.CHARACTERS, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
+    matricula = ft.TextField(label="Matricula",width=250, max_length=14, input_filter=ft.NumbersOnlyInputFilter(), label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     apellido_paterno = ft.TextField(label="Apellido Paterno", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     apellido_materno = ft.TextField(label="Apellido Materno", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     nombres = ft.TextField(label="Nombres", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     curp = ft.TextField(label="Curp", width=250, capitalization=ft.TextCapitalization.CHARACTERS, max_length=18, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
-    especialidad = ft.TextField(label="Especialidad", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
+    especialidad = ft.Dropdown(label="Especialidad", width=250, options=[
+        ft.dropdown.Option("Administracion de Recursos Humanos"),
+        ft.dropdown.Option("Electronica"),
+        ft.dropdown.Option("Programacion"),
+        ft.dropdown.Option("Secretariado Ejecutivo Bilngüe")
+    ] )
     telefono = ft.TextField(label="Telefono", width=250,  input_filter=ft.NumbersOnlyInputFilter(), max_length=10, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     ciudad_origen = ft.TextField(label="Ciudad de origen", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     estado = ft.Dropdown(label="Estado", width=250, options=[
@@ -111,11 +116,11 @@ def main(page: ft.Page):
         ft.dropdown.Option("Zacatecas")]
         )
     disciplina = ft.Dropdown(label="Disciplinas", width=250, options=[
-        ft.dropdown.Option("Fútbol"),
-        ft.dropdown.Option("Basquetbol"),
-        ft.dropdown.Option("Voleibol"),
-        ft.dropdown.Option("Tenis"),
         ft.dropdown.Option("Ajedrez"),
+        ft.dropdown.Option("Basquetbol"),
+        ft.dropdown.Option("Fútbol"),
+        ft.dropdown.Option("Tenis"),
+        ft.dropdown.Option("Voleibol"),
         ft.dropdown.Option("Ninguna")
     ] )
     foto = ft.TextField(visible=False, label="Foto", width=250, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
