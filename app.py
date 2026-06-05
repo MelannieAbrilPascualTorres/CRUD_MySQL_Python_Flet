@@ -275,6 +275,11 @@ def main(page: ft.Page):
             return            
         curp.value = curp.value.upper()
         matricula.value = matricula.value.upper()
+        if len(matricula.value) != 14:
+            resultado.value = "La matrícula debe tener 14 caracteres"
+            resultado.color = "red"
+            page.update()
+            return
         if len(curp.value) != 18:
             resultado.value = "La CURP debe tener 18 caracteres"
             resultado.color = "red"
