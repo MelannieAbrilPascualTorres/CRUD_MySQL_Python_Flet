@@ -284,7 +284,7 @@ def main(page: ft.Page):
             r"\d$"
         )
         if not re.match(CURP_VALIDA, curp.value):
-            resultado.value = "La curp no tiene un formato válido"
+            resultado.value = "La CURP no tiene un formato válido"
             resultado.color = "red"
             page.update()
             return
