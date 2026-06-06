@@ -742,14 +742,14 @@ def main(page: ft.Page):
                 ),
                 usuario_login,
                 password_login,
+                resultado_login,
                 btn_login,
-                btn_ir_registro,
-                resultado_login
+                btn_ir_registro
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
         ),
         width=400,
-        height=270,
+        height=300,
         padding=20,
         bgcolor=ft.Colors.PURPLE_50,
         border_radius=15
@@ -773,7 +773,7 @@ def main(page: ft.Page):
                         size=11,
                         color=ft.Colors.GREY_700
                     ),
-
+                resultado_registro, 
                 ft.ElevatedButton(
                     "Registrar",
                     on_click=registrar
@@ -784,12 +784,11 @@ def main(page: ft.Page):
                     on_click=volver_login
                 ),
 
-                resultado_registro
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
         ),
         width=400,
-        height=370,
+        height=390,
         padding=20,
         bgcolor=ft.Colors.PURPLE_50,
         border_radius=15,
@@ -837,7 +836,7 @@ def main(page: ft.Page):
             spacing=10
         ),
         width=1100,
-        height=690,
+        height=700,
         padding=20,
         bgcolor=ft.Colors.PURPLE_50,
         border_radius=15,
