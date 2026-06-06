@@ -109,7 +109,7 @@ def main(page: ft.Page):
     ] )
     foto = ft.TextField(visible=False, label="Foto", width=250, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     resultado = ft.Text()
-    busqueda = ft.TextField(label="Buscar matrícula o apellido",width=350)
+    busqueda = ft.TextField(label="Buscar matrícula o apellido", width=350)
     imagen_alumno = ft.Image(src="", width=120, height=120, visible=False)
     usuario_registro = ft.TextField(label="Nuevo usuario", width=300)
     password_registro = ft.TextField(label="Contraseña", width=300, password=True, can_reveal_password=True)
@@ -591,6 +591,11 @@ def main(page: ft.Page):
             page.update()
 
     def buscar(e): 
+        if not busqueda.value:
+            cargar_lista()
+            resultado.value = ""
+            page.update()
+            return
         lista_datos.content.controls.clear()
         cursor.execute("""
             SELECT matricula,
@@ -628,6 +633,7 @@ def main(page: ft.Page):
                     )
                 )
         page.update()
+    busqueda.on_change = buscar
 
     file_picker = ft.FilePicker()
     page.services.append(file_picker)
@@ -650,11 +656,6 @@ def main(page: ft.Page):
     btn_foto = ft.ElevatedButton(
         "Seleccionar foto",
         on_click=seleccionar_foto
-    )
-    btn_buscar = ft.ElevatedButton(
-        
-        "Buscar",
-        on_click=buscar
     )
     btn_guardar = ft.ElevatedButton(
         "Guardar",
@@ -817,7 +818,6 @@ def main(page: ft.Page):
                             [   
                                 ft.Container(height=40),
                                 busqueda,
-                                btn_buscar,
                                 lista_datos
                             ],
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER
