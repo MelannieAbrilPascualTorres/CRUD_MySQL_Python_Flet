@@ -154,6 +154,12 @@ def main(page: ft.Page):
             resultado_registro.color = "red"
             page.update()
             return
+        
+        if " " in password_registro.value:
+            resultado_registro.value = "La contraseña no puede contener espacios"
+            resultado_registro.color = "red"
+            page.update()
+            return
         if not re.search(r"[A-Z]", password_registro.value):
            resultado_registro.value = "Debe contener una mayúscula"
            resultado_registro.color = "red"
