@@ -528,9 +528,9 @@ def main(page: ft.Page):
             )
             conexion.commit()
             if cursor.rowcount > 0:
+                limpiar(None)
                 resultado.value = "Alumno eliminado correctamente"
                 resultado.color = "green"
-                limpiar(None)
                 cargar_lista()
             else:
                 resultado.value = "Matrícula no encontrada"
