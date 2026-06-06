@@ -26,7 +26,7 @@ def main(page: ft.Page):
         )
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS alumnos (
-                        matricula VARCHAR(20) PRIMARY KEY,
+                        matricula VARCHAR(14) PRIMARY KEY,
                         apellido_paterno VARCHAR(50) NOT NULL,
                         apellido_materno VARCHAR(50) NOT NULL,
                         nombres VARCHAR(100) NOT NULL,
@@ -53,9 +53,9 @@ def main(page: ft.Page):
         print(e)
         return
     matricula = ft.TextField(label="Matricula",width=250, max_length=14, input_filter=ft.NumbersOnlyInputFilter(), label_style=ft.TextStyle(color=ft.Colors.GREY_400))
-    apellido_paterno = ft.TextField(label="Apellido Paterno", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
-    apellido_materno = ft.TextField(label="Apellido Materno", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
-    nombres = ft.TextField(label="Nombres", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
+    apellido_paterno = ft.TextField(label="Apellido Paterno", width=250, max_length=50, counter="", label_style=ft.TextStyle(color=ft.Colors.GREY_400))
+    apellido_materno = ft.TextField(label="Apellido Materno", width=250, max_length=50, counter="", label_style=ft.TextStyle(color=ft.Colors.GREY_400))
+    nombres = ft.TextField(label="Nombres", width=250, max_length=100, counter="", label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     curp = ft.TextField(label="Curp", width=250, capitalization=ft.TextCapitalization.CHARACTERS, max_length=18, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     especialidad = ft.Dropdown(label="Especialidad", width=250, options=[
         ft.dropdown.Option("Administracion de Recursos Humanos"),
@@ -64,7 +64,7 @@ def main(page: ft.Page):
         ft.dropdown.Option("Secretariado Ejecutivo Bilngüe")
     ] )
     telefono = ft.TextField(label="Telefono", width=250,  input_filter=ft.NumbersOnlyInputFilter(), max_length=10, label_style=ft.TextStyle(color=ft.Colors.GREY_400))
-    ciudad_origen = ft.TextField(label="Ciudad de origen", width=250,  label_style=ft.TextStyle(color=ft.Colors.GREY_400))
+    ciudad_origen = ft.TextField(label="Ciudad de origen", width=250, max_length=100, counter="", label_style=ft.TextStyle(color=ft.Colors.GREY_400))
     estado = ft.Dropdown(label="Estado", width=250, options=[
         ft.dropdown.Option("Aguascalientes"),
         ft.dropdown.Option("Baja California"),
@@ -274,6 +274,20 @@ def main(page: ft.Page):
             page.update()
             return            
         curp.value = curp.value.upper()
+        CURP_VALIDA = (
+            r"^[A-Z]{4}"
+            r"\d{6}"
+            r"[HM]"
+            r"(AS|BC|BS|CC|CL|CM|CS|CH|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)"
+            r"[B-DF-HJ-NP-TV-Z]{3}"
+            r"[A-Z0-9]"
+            r"\d$"
+        )
+        if not re.match(CURP_VALIDA, curp.value):
+            resultado.value = "La curp no tiene un formato válido"
+            resultado.color = "red"
+            page.update()
+            return
         matricula.value = matricula.value.upper()
         if len(matricula.value) != 14:
             resultado.value = "La matrícula debe tener 14 caracteres"
@@ -379,6 +393,21 @@ def main(page: ft.Page):
             page.update()
             return
         curp.value = curp.value.upper()
+        CURP_VALIDA = (
+            r"^[A-Z]{4}"
+            r"\d{6}"
+            r"[HM]"
+            r"(AS|BC|BS|CC|CL|CM|CS|CH|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)"
+            r"[B-DF-HJ-NP-TV-Z]{3}"
+            r"[A-Z0-9]"
+            r"\d$"
+        )
+        if not re.match(CURP_VALIDA, curp.value):
+            resultado.value = "La curp no tiene un formato válido"
+            resultado.color = "red"
+            page.update()
+            return
+        
         if not telefono.value.isdigit() or len(telefono.value) != 10:
             resultado.value = "El teléfono debe tener 10 dígitos"
             resultado.color = "red"
@@ -572,9 +601,11 @@ def main(page: ft.Page):
             WHERE matricula LIKE %s
                 OR apellido_paterno LIKE %s
                 OR apellido_materno LIKE %s
+                OR CONCAT(apellido_paterno, ' ', apellido_materno) LIKE %s
             ORDER BY apellido_paterno
         """,
         (
+            f"%{busqueda.value}%",
             f"%{busqueda.value}%",
             f"%{busqueda.value}%",
             f"%{busqueda.value}%"
