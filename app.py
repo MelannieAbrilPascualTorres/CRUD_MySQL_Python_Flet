@@ -169,7 +169,7 @@ def main(page: ft.Page):
             resultado_registro.color = "red"
             page.update()
             return
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password_registro.value):
+        if not re.search(r"[^a-zA-Z0-9\s]", password_registro.value):
             resultado_registro.value = "Debe contener un carácter especial"
             resultado_registro.color = "red"
             page.update()
