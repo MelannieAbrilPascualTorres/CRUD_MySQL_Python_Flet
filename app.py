@@ -768,6 +768,12 @@ def main(page: ft.Page):
                 password_registro,
                 confirmar_password,
 
+                ft.Text(
+                        "Mín. 8 caracteres, mayúscula, minúscula, número y símbolo.",
+                        size=11,
+                        color=ft.Colors.GREY_700
+                    ),
+
                 ft.ElevatedButton(
                     "Registrar",
                     on_click=registrar
@@ -783,7 +789,7 @@ def main(page: ft.Page):
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
         ),
         width=400,
-        height=350,
+        height=370,
         padding=20,
         bgcolor=ft.Colors.PURPLE_50,
         border_radius=15,
